@@ -13,8 +13,8 @@ export class Db {
                 console.log(`connected to ${name}`);
             }
         });
-
     }
+
     static get(): Db {
         if (!this.instance) {
             this.instance = new Db('dev.sqlite3');
