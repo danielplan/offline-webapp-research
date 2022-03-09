@@ -1,7 +1,6 @@
-import { writeDataCache, readDataCache } from "../cache/db";
+import { writeDataCache, readDataCache, pushBufferData } from "../cache/db";
 
 const baseUrl = 'http://localhost:3000/';
-const cachedPrefix = 'cache';
 
 export const get = async (path) => {
     if (isOnline()) {
@@ -21,34 +20,43 @@ export const get = async (path) => {
 
 export const post = async (path, payload) => {
     if (isOnline()) {
-        const result = await fetch(`${baseUrl}${path}`, {
-            method: 'POST',
-            body: payload
-        });
-        if (result.ok) {
-            const data = await result.json();
-            setCached(path, 'post', data);
+        try {
+            const result = await fetch(`${baseUrl}${path}`, {
+                method: 'POST',
+                body: payload
+            });
+            if (result.ok) {
+                const data = await result.json();
+                return data;
+            }
+        } catch {
+            await pushBufferData(`${baseUrl}${path}`, 'POST', payload);
+            return true;
         }
     }
+    await pushBufferData(`${baseUrl}${path}`, 'POST', payload);
+    return true;
 }
 
 export const put = async (path, payload) => {
     if (isOnline()) {
-        const result = await fetch(`${baseUrl}${path}`, {
-            method: 'PUT',
-            body: payload
-        });
-        if (result.ok) {
-            const data = await result.json();
-            setCached(path, 'put', data);
+        try {
+            const result = await fetch(`${baseUrl}${path}`, {
+                method: 'PUT',
+                body: payload
+            });
+            if (result.ok) {
+                const data = await result.json();
+                return data;
+            }
+        } catch {
+            await pushBufferData(`${baseUrl}${path}`, 'PUT', payload);
+            return true;
         }
     }
+    await pushBufferData(`${baseUrl}${path}`, 'PUT', payload);
+    return true;
 }
 
 
 const isOnline = () => localStorage.getItem('online') == 1;
-//const getCached = (path, method) => JSON.parse(localStorage.getItem(`${cachedPrefix}.${method}.${path}`));
-const setCached = (path, method, data) => {
-    //TODO: what cache post/put
-    localStorage.setItem(`${cachedPrefix}.${method}.${path}`, JSON.stringify(data));
-}
