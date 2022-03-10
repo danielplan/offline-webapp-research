@@ -18,6 +18,7 @@ export default class CacheManager {
             return new Promise(resolve => {
                 const request = window.indexedDB.open(`${DB_NAME}.${this.id}`, VERSION);
                 request.onsuccess = e => {
+                    this.db = e.target.result;
                     resolve(e.target.result);
                 };
                 request.onerror = e => {
