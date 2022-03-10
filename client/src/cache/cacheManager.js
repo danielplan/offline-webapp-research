@@ -81,7 +81,7 @@ export default class CacheManager {
                 url,
                 method
             };
-            store.put(item);
+            store.add(item);
         });
     }
 }

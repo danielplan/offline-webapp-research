@@ -3,7 +3,7 @@ import CacheManager from "./cacheManager";
 export default class ApiClient {
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
-        this.cacheManager = new CacheManager('baseUrl');
+        this.cacheManager = new CacheManager(baseUrl);
     }
 
 
