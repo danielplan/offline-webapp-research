@@ -1,13 +1,15 @@
-import { get, post, put } from "./api"
+import ApiClient from '../cache/apiClient';
+
+const productApi = new ApiClient('http://localhost:3000/')
 
 export const getProducts = () => {
-    return get('product');
+    return productApi.get('product');
 }
 
 export const addProduct = ({ name, price }) => {
-    return post('product', { name, price });
+    return productApi.post('product', { name, price });
 }
 
 export const updateProduct = (id, { name, price }) => {
-    return put('product', { name, price, id });
+    return productApi.put('product', { name, price, id });
 }
