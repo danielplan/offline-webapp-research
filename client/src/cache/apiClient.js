@@ -29,7 +29,7 @@ export default class ApiClient {
             try {
                 const result = await fetch(`${this.baseUrl}${path}`, {
                     method: 'POST',
-                    body: payload
+                    body: JSON.stringify(payload)
                 });
                 if (result.ok) {
                     const data = await result.json();
@@ -48,7 +48,7 @@ export default class ApiClient {
             try {
                 const result = await fetch(`${this.baseUrl}${path}`, {
                     method: 'PUT',
-                    body: payload
+                    body: JSON.stringify(payload)
                 });
                 if (result.ok) {
                     const data = await result.json();
