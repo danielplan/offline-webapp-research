@@ -4,26 +4,15 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" absolute bottom temporary>
+    <v-navigation-drawer v-model="drawer" absolute temporary>
       <v-list nav dense>
-        <v-list-item-group
-          v-model="group"
-          active-class="deep-purple--text text--accent-4"
-        >
+        <v-list-item-group v-model="group">
           <v-list-item>
-            <v-list-item-title>Foo</v-list-item-title>
+            <v-list-item-title><v-icon>mdi-plus</v-icon>  Add Item</v-list-item-title>
           </v-list-item>
 
           <v-list-item>
-            <v-list-item-title>Bar</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>Fizz</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>Buzz</v-list-item-title>
+            <v-list-item-title><v-icon>mdi-format-list-bulleted</v-icon>  Display Items</v-list-item-title>
           </v-list-item>
         </v-list-item-group>
       </v-list>

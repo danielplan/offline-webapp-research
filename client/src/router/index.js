@@ -1,15 +1,21 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import Home from '../views/Home.vue'
+import DisplayItemList from '../views/DisplayItemList.vue'
+import AddItem from '../views/AddItem.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-  // {
-  //   path: '/',
-  //   name: 'Home',
-  //   component: Home
-  // },
+  {
+    path: '/',
+    name: 'DisplayItemList',
+    component: DisplayItemList
+  },
+  {
+    path: '/add',
+    name: 'AddItem',
+    component: AddItem
+  },
 ]
 
 const router = new VueRouter({
