@@ -27,10 +27,14 @@ productRouter.get('/', async (req, res) => {
                 name varchar(50),
                 price number
             );`);
+            let values: string = '';
 
             for (let i = 0; i < 100; i++) {
-                await database.db.exec(`INSERT INTO product (name, price) VALUES ('${randomString(10)}', ${randomNumber()});`)
+                if (i > 0)
+                    values += ','
+                values += `('${randomString(10)}', ${randomNumber()})`;
             }
+            await database.db.exec(`INSERT INTO product (name, price) VALUES ${values};`)
             database.db.all('select * from product;', (err, rows) => {
                 list = rows.map((row) => ({
                     id: row.id,
@@ -65,6 +69,20 @@ productRouter.put('/:id', async (req, res) => {
         product.name, product.price, req.params.id
     ]);
     res.send(product);
+});
+
+productRouter.post('/synch', async (req, res) => {
+    const database = await Db.get();
+    const products: Product[] = req.body.map((p: Product) => ({
+        name: p.name,
+        price: p.price,
+    }));
+    let values = '';
+    products.forEach((element) => {
+        values += `('${element.name}', ${element.price})`;
+    });
+    await database.db.exec(`INSERT INTO product (name, price) VALUES ${values};`)
+    res.send('synced all');
 });
 
 export { productRouter }; 
