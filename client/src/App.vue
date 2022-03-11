@@ -8,11 +8,16 @@
       <v-list nav dense>
         <v-list-item-group v-model="group">
           <v-list-item>
-            <v-list-item-title><v-icon>mdi-plus</v-icon>  Add Item</v-list-item-title>
+            <v-list-item-title
+              ><v-icon>mdi-plus</v-icon> Add Item</v-list-item-title
+            >
           </v-list-item>
 
           <v-list-item>
-            <v-list-item-title><v-icon>mdi-format-list-bulleted</v-icon>  Display Items</v-list-item-title>
+            <v-list-item-title
+              ><v-icon>mdi-format-list-bulleted</v-icon> Display
+              Items</v-list-item-title
+            >
           </v-list-item>
         </v-list-item-group>
       </v-list>
@@ -31,15 +36,7 @@ export default {
     drawer: false,
     group: null,
   }),
-  mounted: () => {
-    window.addEventListener("online", () => {
-      localStorage.setItem("online", 1);
-    });
-    window.addEventListener("offline", () => {
-      localStorage.setItem("online", 0);
-    });
-    localStorage.setItem("online", window.navigator.onLine ? 1 : 0);
-  },
+  mounted: () => {},
   watch: {
     group() {
       this.drawer = false;

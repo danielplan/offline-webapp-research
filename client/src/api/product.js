@@ -7,9 +7,11 @@ export const getProducts = () => {
 }
 
 export const addProduct = ({ name, price }) => {
-    return productApi.post('product', { name, price });
+    return productApi.post('product', { name, price }, {
+        synchEndpoint: 'product/synch/'
+    });
 }
 
 export const updateProduct = (id, { name, price }) => {
-    return productApi.put('product', { name, price, id });
+    return productApi.put(`product/${id}`, { name, price });
 }

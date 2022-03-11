@@ -2,6 +2,7 @@ const VERSION = 1;
 const DB_NAME = 'cache';
 const DATA_STORE = 'data';
 const BUFFER_STORE = 'buffer';
+const SYNCH_STORE = 'synch';
 
 export default class CacheManager {
     db = null;
@@ -11,6 +12,8 @@ export default class CacheManager {
             console.log('Caching is not supported');
             return;
         }
+        this.synchUp();
+        window.addEventListener('online', this.synchUp);
     }
 
     getCache = async () => {
@@ -28,6 +31,7 @@ export default class CacheManager {
                     const db = e.target.result;
                     db.createObjectStore(DATA_STORE, { keyPath: 'id', autoIncrement: false });
                     db.createObjectStore(BUFFER_STORE, { keyPath: 'id', autoIncrement: true });
+                    db.createObjectStore(SYNCH_STORE, { keyPath: 'id', autoIncrement: false });
                 };
             });
         } else {
@@ -84,5 +88,80 @@ export default class CacheManager {
             };
             store.add(item);
         });
+    }
+
+    writeSynchData = async (url, method, data, key, isCollective) => {
+        const db = await this.getCache();
+        return new Promise(resolve => {
+            const t = db.transaction(SYNCH_STORE, 'readonly');
+            const s = t.objectStore(SYNCH_STORE);
+            let existingItem = s.get(`${key}.${method}`);
+            t.oncomplete = () => {
+                let item = null;
+                existingItem = existingItem.result;
+                if (existingItem) {
+                    console.log(existingItem);
+                    item = { ...existingItem, data: [...existingItem.data, data] };
+                } else {
+                    item = {
+                        id: `${key}.${method}`,
+                        key,
+                        data: [data],
+                        url,
+                        method,
+                        collective: isCollective
+                    };
+                }
+                const trans = db.transaction(SYNCH_STORE, 'readwrite');
+                const store = trans.objectStore(SYNCH_STORE);
+                store.put(item);
+                trans.oncomplete = () => {
+                    resolve();
+                };
+            };
+        });
+    }
+
+    synchUp = async () => {
+        const db = await this.getCache();
+        const t = db.transaction(SYNCH_STORE, 'readonly');
+        const s = t.objectStore(SYNCH_STORE);
+        let result = s.getAll();
+        t.oncomplete = () => {
+            result = result.result;
+            const collectiveRequestData = {};
+            let collectiveRequestPath = '';
+            let singleRequest = {};
+            result.forEach(r => {
+                if (r.collective) {
+                    collectiveRequestData.push({ key: r.key, data: r.data });
+                    collectiveRequestPath = r.url;
+                } else {
+                    singleRequest = {
+                        ...singleRequest, [r.method]: {
+                            [r.url]: r.data
+                        }
+                    }
+                }
+            });
+            if (collectiveRequestData) {
+                collectiveRequestData.forEach((c, method) => {
+                    fetch(collectiveRequestPath, {
+                        method,
+                        data: c
+                    });
+                });
+            }
+            if (singleRequest) {
+                singleRequest.forEach((c, method) => {
+                    c.forEach((data, url) => {
+                        fetch(url, {
+                            method,
+                            data
+                        });
+                    });
+                });
+            }
+        }
     }
 }

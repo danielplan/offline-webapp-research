@@ -49,6 +49,7 @@ productRouter.get('/', async (req, res) => {
 
 productRouter.post('/', async (req, res) => {
     const database = await Db.get();
+
     const product: Product = {
         name: req.body.name,
         price: req.body.price,
@@ -73,16 +74,27 @@ productRouter.put('/:id', async (req, res) => {
 
 productRouter.post('/synch', async (req, res) => {
     const database = await Db.get();
+    if (!req.body) {
+        res.status(500).send();
+        return;
+    }
     const products: Product[] = req.body.map((p: Product) => ({
         name: p.name,
         price: p.price,
     }));
     let values = '';
-    products.forEach((element) => {
+    products.forEach((element, i) => {
+        if (i > 0)
+            values += ','
         values += `('${element.name}', ${element.price})`;
     });
-    await database.db.exec(`INSERT INTO product (name, price) VALUES ${values};`)
-    res.send('synced all');
+    try {
+        await database.db.exec(`INSERT INTO product (name, price) VALUES ${values};`);
+        res.send('synced all');
+        return;
+    } catch { }
+
+    res.status(500).send()
 });
 
 export { productRouter }; 
