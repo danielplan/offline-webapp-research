@@ -2,7 +2,7 @@ import { errorHandler } from './errorHandler';
 import express from 'express';
 import cors from 'cors';
 import { productRouter } from './router/product';
-import { synchRouter } from './router/sych';
+import { synchRouter } from './router/synch';
 
 export const createServer = (): express.Application => {
     const app = express();
