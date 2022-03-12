@@ -1,14 +1,13 @@
 import CacheManager from "./cacheManager";
 
 export default class ApiClient {
-
     static init = false;
 
-    constructor(baseUrl, totalSynchEndpoint, fetchOptions) {
+    constructor(baseUrl, synchEndpoint, fetchOptions) {
         this.baseUrl = baseUrl;
         this.cacheManager = new CacheManager(baseUrl);
         this.fetchOptions = fetchOptions;
-        this.totalSynchEndpoint = totalSynchEndpoint;
+        this.synchEndpoint = synchEndpoint;
         if (!ApiClient.init) {
             window.addEventListener("online", () => {
                 localStorage.setItem("online", 1);
@@ -19,6 +18,8 @@ export default class ApiClient {
             localStorage.setItem("online", window.navigator.onLine ? 1 : 0);
             ApiClient.init = true;
         }
+        this.synchUp();
+        window.addEventListener("online", () => this.synchUp);
     }
 
 
@@ -54,12 +55,9 @@ export default class ApiClient {
      * 
      * @param {string} path routing endpoint
      * @param {Object} payload data to be posted
-     * @param {string} synchOptions.key key for api endpoint that allows multiple synchronizations
-     * @param {string} synchOptions.endpoint endpoint of api that allows multiple records to be posted
      * @param {RequestInit} options fetch options
      */
-    post = async (path, payload, synchOptions, options) => {
-        console.log(payload);
+    post = async (path, payload, options) => {
         if (this.isOnline()) {
             try {
                 const result = await fetch(`${this.baseUrl}${path}`, {
@@ -68,7 +66,9 @@ export default class ApiClient {
                     body: JSON.stringify(payload),
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        ...this.fetchOptions?.headers,
+                        ...options?.headers,
                     },
                     ...options
                 });
@@ -80,25 +80,30 @@ export default class ApiClient {
                 //do nothing
             }
         }
-        if (synchOptions.key && this.totalSynchEndpoint) {
-            await this.cacheManager.writeSynchData(`${this.baseUrl}${this.totalSynchEndpoint}`, 'POST', payload, synchOptions.key, true);
-        } else if (synchOptions.endpoint) {
-            await this.cacheManager.writeSynchData(`${this.baseUrl}${synchOptions.endpoint}`, 'POST', payload, synchOptions.endpoint, false);
-        } else {
-            await this.cacheManager.pushBufferData(`${this.baseUrl}${path}`, 'POST', payload);
-        }
+        await this.cacheManager.pushBufferedRequest(`${this.baseUrl}${path}`, 'POST', payload);
     }
 
-    put = async (path, payload) => {
+    /**
+     * Perform a POST request
+     * 
+     * @param {string} path routing endpoint
+     * @param {Object} payload data to be posted
+     * @param {RequestInit} options fetch options
+     */
+    put = async (path, payload, options) => {
         if (this.isOnline()) {
             try {
                 const result = await fetch(`${this.baseUrl}${path}`, {
+                    ...this.fetchOptions,
                     method: 'PUT',
                     body: JSON.stringify(payload),
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        ...this.fetchOptions?.headers,
+                        ...options?.headers,
                     },
+                    ...options
                 });
                 if (result.ok) {
                     const data = await result.json();
@@ -108,8 +113,53 @@ export default class ApiClient {
                 //do nothing
             }
         }
-        await this.cacheManager.pushBufferData(`${this.baseUrl}${path}`, 'PUT', payload);
+        await this.cacheManager.pushBufferedRequest(`${this.baseUrl}${path}`, 'PUT', payload);
     }
-
-
+    synchUp = async () => {
+        const requests = await this.cacheManager.getBufferedRequests();
+        if (requests && requests.length) {
+            if (this.synchEndpoint) {
+                try {
+                    const result = await fetch(`${this.baseUrl}${this.synchEndpoint}`, {
+                        ...this.fetchOptions,
+                        method: 'PATCH',
+                        body: JSON.stringify(requests),
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            ...this.fetchOptions?.headers,
+                        }
+                    });
+                    if (result.ok) {
+                        const data = await result.json();
+                        console.log(data);
+                        //TODO: delete successful 
+                        return;
+                    }
+                } catch {
+                    console.error('Could not synch: request failed');
+                }
+            } else {
+                requests.forEach(async (request) => {
+                    try {
+                        const result = await fetch(request.url, {
+                            ...this.fetchOptions,
+                            method: request.method,
+                            body: request.data,
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                ...this.fetchOptions?.headers,
+                            }
+                        });
+                        if (result.ok) {
+                            await this.cacheManager.removeBufferedRequest(request.id);
+                        }
+                    } catch {
+                        //skip
+                    }
+                });
+            }
+        }
+    }
 }
