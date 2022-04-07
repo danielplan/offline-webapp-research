@@ -1,27 +1,5 @@
 <template>
   <v-app>
-    <v-app-bar class="app-bar" color="primary" dense dark>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-    </v-app-bar>
-
-    <v-navigation-drawer v-model="drawer" absolute temporary>
-      <v-list nav dense>
-        <v-list-item-group v-model="group">
-          <v-list-item>
-            <v-list-item-title
-              ><v-icon>mdi-plus</v-icon> Add Item</v-list-item-title
-            >
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title
-              ><v-icon>mdi-format-list-bulleted</v-icon> Display
-              Items</v-list-item-title
-            >
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-    </v-navigation-drawer>
     <v-main>
       <router-view />
     </v-main>
