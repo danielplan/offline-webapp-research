@@ -1,6 +1,6 @@
 import ApiClient from '../cache/apiClient';
 
-const productApi = new ApiClient('http://localhost:3000/');
+const productApi = new ApiClient('http://localhost:3000/', 'sync');
 
 export const getProducts = () => {
     return productApi.get('product');

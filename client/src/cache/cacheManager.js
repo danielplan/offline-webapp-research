@@ -4,7 +4,6 @@ const DATA_STORE = 'data';
 const BUFFER_STORE = 'buffer';
 
 export default class CacheManager {
-    db = null;
     constructor(id) {
         this.id = id;
         if (!('indexedDB' in window)) {
@@ -46,7 +45,7 @@ export default class CacheManager {
             const store = trans.objectStore(DATA_STORE);
             const item = {
                 id,
-                data: JSON.stringify(data),
+                data,
                 timestamp: new Date().getTime()
             };
             store.put(item);
@@ -61,7 +60,7 @@ export default class CacheManager {
             const item = store.get(id);
             trans.oncomplete = () => {
                 if (item.result) {
-                    resolve(JSON.parse(item.result.data));
+                    resolve(item.result.data);
                 } else {
                     reject('Nothing found')
                 }
@@ -78,7 +77,7 @@ export default class CacheManager {
             };
             const store = trans.objectStore(BUFFER_STORE);
             const item = {
-                data: JSON.stringify(data),
+                data,
                 url,
                 method
             };
@@ -104,7 +103,7 @@ export default class CacheManager {
         return new Promise(resolve => {
             const request = db.transaction(BUFFER_STORE, 'readwrite').objectStore(BUFFER_STORE).delete(id);
             request.oncomplete = () => {
-                resolve();
+                resolve(true);
             };
         });
     }

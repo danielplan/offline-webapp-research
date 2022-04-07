@@ -3,11 +3,18 @@ import CacheManager from "./cacheManager";
 export default class ApiClient {
     static init = false;
 
-    constructor(baseUrl, synchEndpoint, fetchOptions) {
+    /**
+     * Perform a POST request
+     * 
+     * @param {string} baseurl base url used, e.g. https://localhost:3000/
+     * @param {string} synchEndpoint 
+     * @param {RequestInit} options default options
+     */
+    constructor(baseUrl, bulkEndpoint, fetchOptions) {
         this.baseUrl = baseUrl;
         this.cacheManager = new CacheManager(baseUrl);
         this.fetchOptions = fetchOptions;
-        this.synchEndpoint = synchEndpoint;
+        this.bulkEndpoint = bulkEndpoint;
         if (!ApiClient.init) {
             window.addEventListener("online", () => {
                 localStorage.setItem("online", 1);
@@ -73,8 +80,7 @@ export default class ApiClient {
                     ...options
                 });
                 if (result.ok) {
-                    const data = await result.json();
-                    return data;
+                    return await result.json();
                 }
             } catch {
                 //do nothing
@@ -106,8 +112,7 @@ export default class ApiClient {
                     ...options
                 });
                 if (result.ok) {
-                    const data = await result.json();
-                    return data;
+                    return result.json();
                 }
             } catch {
                 //do nothing
@@ -115,14 +120,16 @@ export default class ApiClient {
         }
         await this.cacheManager.pushBufferedRequest(`${this.baseUrl}${path}`, 'PUT', payload);
     }
+
+
     synchUp = async () => {
         const requests = await this.cacheManager.getBufferedRequests();
         if (requests && requests.length) {
-            if (this.synchEndpoint) {
+            if (this.bulkEndpoint) {
                 try {
-                    const result = await fetch(`${this.baseUrl}${this.synchEndpoint}`, {
+                    const result = await fetch(`${this.baseUrl}${this.bulkEndpoint}`, {
                         ...this.fetchOptions,
-                        method: 'PATCH',
+                        method: 'POST',
                         body: JSON.stringify(requests),
                         headers: {
                             'Accept': 'application/json',
@@ -131,10 +138,10 @@ export default class ApiClient {
                         }
                     });
                     if (result.ok) {
-                        const data = await result.json();
-                        console.log(data);
-                        //TODO: delete successful 
-                        return;
+                        const response = await result.json();
+                        response.result.forEach(async (id) => {
+                            await this.cacheManager.removeBufferedRequest(id);
+                        });
                     }
                 } catch {
                     console.error('Could not synch: request failed');
@@ -145,7 +152,7 @@ export default class ApiClient {
                         const result = await fetch(request.url, {
                             ...this.fetchOptions,
                             method: request.method,
-                            body: request.data,
+                            body: JSON.stringify(request.data),
                             headers: {
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json',
