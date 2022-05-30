@@ -32,6 +32,33 @@ export default class ApiClient {
 
     isOnline = () => localStorage.getItem('online') == 1;
 
+
+    _request = async (path, options, payload, method) => {
+        if (this.isOnline()) {
+            try {
+                const result = await fetch(`${this.baseUrl}${path}`, {
+                    ...this.fetchOptions,
+                    method,
+                    body: JSON.stringify(payload),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        ...this.fetchOptions?.headers,
+                        ...options?.headers,
+                    },
+                    ...options
+                });
+                if (result.ok) {
+                    return await result.json();
+                }
+            } catch {
+                //do nothing
+            }
+        }
+        await this.cacheManager.pushBufferedRequest(`${this.baseUrl}${path}`, 'POST', payload);
+    }
+
+
     /**
      * Perform a GET request
      * 
@@ -61,66 +88,45 @@ export default class ApiClient {
      * Perform a POST request
      * 
      * @param {string} path routing endpoint
-     * @param {Object} payload data to be posted
+     * @param {Object} payload request payload
      * @param {RequestInit} options fetch options
      */
     post = async (path, payload, options) => {
-        if (this.isOnline()) {
-            try {
-                const result = await fetch(`${this.baseUrl}${path}`, {
-                    ...this.fetchOptions,
-                    method: 'POST',
-                    body: JSON.stringify(payload),
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        ...this.fetchOptions?.headers,
-                        ...options?.headers,
-                    },
-                    ...options
-                });
-                if (result.ok) {
-                    return await result.json();
-                }
-            } catch {
-                //do nothing
-            }
-        }
-        await this.cacheManager.pushBufferedRequest(`${this.baseUrl}${path}`, 'POST', payload);
+        return this._request(path, payload, options, 'POST');
     }
 
     /**
-     * Perform a POST request
+     * Perform a PUT request
      * 
      * @param {string} path routing endpoint
-     * @param {Object} payload data to be posted
+     * @param {Object} payload request payload
      * @param {RequestInit} options fetch options
      */
     put = async (path, payload, options) => {
-        if (this.isOnline()) {
-            try {
-                const result = await fetch(`${this.baseUrl}${path}`, {
-                    ...this.fetchOptions,
-                    method: 'PUT',
-                    body: JSON.stringify(payload),
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        ...this.fetchOptions?.headers,
-                        ...options?.headers,
-                    },
-                    ...options
-                });
-                if (result.ok) {
-                    return result.json();
-                }
-            } catch {
-                //do nothing
-            }
-        }
-        await this.cacheManager.pushBufferedRequest(`${this.baseUrl}${path}`, 'PUT', payload);
+        return this._request(path, payload, options, 'PUT');
     }
 
+    /**
+     * Perform a PATCH request
+     * 
+     * @param {string} path routing endpoint
+     * @param {Object} payload request payload
+     * @param {RequestInit} options fetch options
+     */
+    PATCH = async (path, payload, options) => {
+        return this._request(path, payload, options, 'PATCH');
+    }
+
+    /**
+     * Perform a DELETE request
+     * 
+     * @param {string} path routing endpoint
+     * @param {Object} payload request payload
+     * @param {RequestInit} options fetch options
+     */
+    PATCH = async (path, payload, options) => {
+        return this._request(path, payload, options, 'DELETE');
+    }
 
     synchUp = async () => {
         const requests = await this.cacheManager.getBufferedRequests();
