@@ -9,7 +9,6 @@ export default class ApiClient {
             localStorage.setItem("online", 0);
         });
         localStorage.setItem("online", window.navigator.onLine ? 1 : 0);
-        ApiClient.init = true;
     }
 
     /**
