@@ -113,7 +113,7 @@ export default class ApiClient {
      * @param {Object} payload request payload
      * @param {RequestInit} options fetch options
      */
-    PATCH = async (path, payload, options) => {
+    patch = async (path, payload, options) => {
         return this._request(path, payload, options, 'PATCH');
     }
 
@@ -124,7 +124,7 @@ export default class ApiClient {
      * @param {Object} payload request payload
      * @param {RequestInit} options fetch options
      */
-    PATCH = async (path, payload, options) => {
+    delete = async (path, payload, options) => {
         return this._request(path, payload, options, 'DELETE');
     }
 
