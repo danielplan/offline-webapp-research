@@ -55,7 +55,7 @@ export default class ApiClient {
                 //do nothing
             }
         }
-        await this.cacheManager.pushBufferedRequest(`${this.baseUrl}${path}`, 'POST', payload);
+        await this.cacheManager.pushBufferedRequest(`${this.baseUrl}${path}`, method, payload);
     }
 
 
