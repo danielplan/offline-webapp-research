@@ -40,7 +40,7 @@ export default class ApiClient {
                 const result = await fetch(`${this.baseUrl}${path}`, {
                     ...this.fetchOptions,
                     method,
-                    body: JSON.stringify(payload),
+                    body: payload ? JSON.stringify(payload) : null,
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
