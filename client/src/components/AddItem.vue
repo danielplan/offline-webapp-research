@@ -1,38 +1,33 @@
-<template>
-    <v-card style="padding: 10px; border-radius: 15px;">
-        <v-card-title>
-            Add an Item
-        </v-card-title>
-        <v-card-text>
-            <v-form ref="form" v-model="valid" lazy-validation>
-                <v-text-field
-                    v-model="name"
-                    :rules="nameRules"
-                    label="Name"
-                    required
-                    outlined
-                ></v-text-field>
+<template class="dialog-content">
+    <v-form ref="form" v-model="valid" lazy-validation>
+        <v-text-field
+            v-model="name"
+            :rules="nameRules"
+            label="Name"
+            required
+        ></v-text-field>
 
-                <v-text-field
-                    v-model="price"
-                    :rules="priceRules"
-                    label="Price"
-                    required
-                    outlined
-                ></v-text-field>
-                <div style="width: 100%; display: flex; align-items: center; justify-content: center">
-                    <v-btn :disabled="!valid" color="primary" class="mr-4" @click="submit" rounded>
-                        Add
-                    </v-btn>
+        <v-text-field
+            v-model="price"
+            :rules="priceRules"
+            label="Price"
+            required
+        ></v-text-field>
 
-                    <v-btn icon @click="reset" color="error" style="position: absolute; bottom: 0; right: 0; margin: 0px 10px 10px 0px">
-                        <v-icon>mdi-reload</v-icon>
-                    </v-btn>
-                </div>
+        <v-btn
+            rounded
+            :disabled="!valid"
+            color="primary"
+            class="mr-4"
+            @click="submit"
+        >
+            Add
+        </v-btn>
 
-            </v-form>
-        </v-card-text>
-    </v-card>
+        <v-btn icon color="error" class="mr-4" @click="reset">
+            <v-icon>mdi-reload</v-icon>
+        </v-btn>
+    </v-form>
 </template>
 
 <script>
@@ -67,4 +62,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.v-dialog {
+    background-color: white !important;
+    padding: 10px !important;
+    border-radius: 20px !important;
+}
+</style>
