@@ -37,7 +37,7 @@ export default class ApiClient {
                 const result = await fetch(`${this.baseUrl}${path}`, {
                     ...this.fetchOptions,
                     method,
-                    body: payload ? JSON.stringify(payload) : null,
+                    body: payload ? JSON.stringify(payload) : undefined,
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export default class ApiClient {
      * @param {RequestInit} options fetch options
      */
     post = async (path, payload, options) => {
-        return this._request(path, payload, options, 'POST');
+        return this._request(path, options, payload, 'POST');
     }
 
     /**
@@ -101,7 +101,7 @@ export default class ApiClient {
      * @param {RequestInit} options fetch options
      */
     put = async (path, payload, options) => {
-        return this._request(path, payload, options, 'PUT');
+        return this._request(path, options, payload, 'PUT');
     }
 
     /**
@@ -112,7 +112,7 @@ export default class ApiClient {
      * @param {RequestInit} options fetch options
      */
     patch = async (path, payload, options) => {
-        return this._request(path, payload, options, 'PATCH');
+        return this._request(path, options, payload, 'PATCH');
     }
 
     /**
@@ -123,7 +123,7 @@ export default class ApiClient {
      * @param {RequestInit} options fetch options
      */
     delete = async (path, payload, options) => {
-        return this._request(path, payload, options, 'DELETE');
+        return this._request(path, options, payload, 'DELETE');
     }
 
     synchUp = async () => {
