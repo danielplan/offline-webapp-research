@@ -24,7 +24,7 @@ export default class ApiClient {
         this.fetchOptions = fetchOptions;
         this.bulkEndpoint = bulkEndpoint;
         this.synchUp();
-        window.addEventListener("online", () => this.synchUp);
+        window.addEventListener("online", () => this.synchUp());
     }
 
 
