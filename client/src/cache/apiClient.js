@@ -1,7 +1,20 @@
 import CacheManager from "./cacheManager";
 
 export default class ApiClient {
-    static init = false;
+    static {
+        if (!ApiClient.init) {
+            window.addEventListener("online", () => {
+                localStorage.setItem("online", 1);
+            });
+            window.addEventListener("offline", () => {
+                localStorage.setItem("online", 0);
+            });
+            localStorage.setItem("online", window.navigator.onLine ? 1 : 0);
+            ApiClient.init = true;
+        }
+        this.synchUp();
+        window.addEventListener("online", () => this.synchUp);
+    }
 
     /**
      * Perform a POST request
@@ -15,18 +28,6 @@ export default class ApiClient {
         this.cacheManager = new CacheManager(baseUrl);
         this.fetchOptions = fetchOptions;
         this.bulkEndpoint = bulkEndpoint;
-        if (!ApiClient.init) {
-            window.addEventListener("online", () => {
-                localStorage.setItem("online", 1);
-            });
-            window.addEventListener("offline", () => {
-                localStorage.setItem("online", 0);
-            });
-            localStorage.setItem("online", window.navigator.onLine ? 1 : 0);
-            ApiClient.init = true;
-        }
-        this.synchUp();
-        window.addEventListener("online", () => this.synchUp);
     }
 
 
