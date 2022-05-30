@@ -1,10 +1,12 @@
 <template>
     <v-main>
+        <v-app-bar color="primary"><h4>All the available Items</h4></v-app-bar>
         <v-data-table
             :headers="headers"
             :items="data"
-            :items-per-page="5"
+            :items-per-page="15"
             class="elevation-1"
+            style="margin: 10px"
         ></v-data-table>
         <tbody v-for="(item, key) in rows" :key="key">
             <tr>
@@ -16,18 +18,15 @@
                 </td>
             </tr>
         </tbody>
-        <v-dialog
-            v-model="dialog"
-            width="500"
-        >
-            <template v-slot:activator="{ on,attrs }">
-                <v-btn 
+        <v-dialog v-model="dialog" width="500">
+            <template v-slot:activator="{ on, attrs }">
+                <v-btn
                     v-bind="attrs"
                     v-on="on"
-                    fab 
-                    color="primary" 
-                    fixed 
-                    bottom 
+                    fab
+                    color="primary"
+                    fixed
+                    bottom
                     right
                 >
                     <v-icon>mdi-plus</v-icon>
@@ -40,7 +39,7 @@
 
 <script>
 import { getProducts } from "../api/product";
-import AddItem from '../components/AddItem.vue';
+import AddItem from "../components/AddItem.vue";
 export default {
     components: { AddItem },
     data() {
@@ -74,6 +73,13 @@ export default {
     methods: {
         async getDataFromApi() {
             this.data = await getProducts();
+        },
+    },
+    watch: {
+        dialog(visible) {
+            if (!visible) {
+                this.getDataFromApi();
+            }
         },
     },
 };
