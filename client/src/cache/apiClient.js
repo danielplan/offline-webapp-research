@@ -31,7 +31,7 @@ export default class ApiClient {
     isOnline = () => localStorage.getItem('online') == 1;
 
 
-    _request = async (path, options, payload, method) => {
+    async _request(path, options, payload, method) {
         if (this.isOnline()) {
             try {
                 const result = await fetch(`${this.baseUrl}${path}`, {
@@ -63,7 +63,7 @@ export default class ApiClient {
      * @param {string} path routing endpoint
      * @param {RequestInit} options fetch options
      */
-    get = async (path, options) => {
+    async get(path, options) {
         if (this.isOnline()) {
             try {
                 const result = await fetch(`${this.baseUrl}${path}`, {
@@ -89,7 +89,7 @@ export default class ApiClient {
      * @param {Object} payload request payload
      * @param {RequestInit} options fetch options
      */
-    post = async (path, payload, options) => {
+    async post(path, payload, options) {
         return this._request(path, options, payload, 'POST');
     }
 
@@ -100,7 +100,7 @@ export default class ApiClient {
      * @param {Object} payload request payload
      * @param {RequestInit} options fetch options
      */
-    put = async (path, payload, options) => {
+    async put(path, payload, options) {
         return this._request(path, options, payload, 'PUT');
     }
 
@@ -111,7 +111,7 @@ export default class ApiClient {
      * @param {Object} payload request payload
      * @param {RequestInit} options fetch options
      */
-    patch = async (path, payload, options) => {
+    async patch(path, payload, options) {
         return this._request(path, options, payload, 'PATCH');
     }
 
@@ -122,11 +122,11 @@ export default class ApiClient {
      * @param {Object} payload request payload
      * @param {RequestInit} options fetch options
      */
-    delete = async (path, payload, options) => {
+    async delete(path, payload, options) {
         return this._request(path, options, payload, 'DELETE');
     }
 
-    synchUp = async () => {
+    async synchUp() {
         const requests = await this.cacheManager.getBufferedRequests();
         if (requests && requests.length) {
             if (this.bulkEndpoint) {

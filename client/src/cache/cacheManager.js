@@ -12,7 +12,7 @@ export default class CacheManager {
         }
     }
 
-    getCache = async () => {
+    async getCache() {
         if (!this.db) {
             return new Promise(resolve => {
                 const request = window.indexedDB.open(`${DB_NAME}.${this.id}`, VERSION);
@@ -34,7 +34,7 @@ export default class CacheManager {
         }
     }
 
-    writeDataCache = async (id, data) => {
+    writeDataCache(id, data) {
         const db = await this.getCache();
         return new Promise(resolve => {
             const trans = db.transaction(DATA_STORE, 'readwrite');
@@ -52,7 +52,7 @@ export default class CacheManager {
         });
     }
 
-    readDataCache = async (id) => {
+    async readDataCache(id) {
         const db = await this.getCache();
         return new Promise((resolve, reject) => {
             const trans = db.transaction(DATA_STORE, 'readonly');
@@ -68,7 +68,7 @@ export default class CacheManager {
         });
     }
 
-    pushBufferedRequest = async (url, method, data) => {
+    async pushBufferedRequest(url, method, data) {
         const db = await this.getCache();
         return new Promise(resolve => {
             const trans = db.transaction(BUFFER_STORE, 'readwrite');
@@ -85,7 +85,7 @@ export default class CacheManager {
         });
     }
 
-    getBufferedRequests = async () => {
+    async getBufferedRequests() {
         const db = await this.getCache();
         return new Promise(resolve => {
             const trans = db.transaction(BUFFER_STORE, 'readonly');
@@ -98,7 +98,7 @@ export default class CacheManager {
         });
     }
 
-    removeBufferedRequest = async (id) => {
+    async removeBufferedRequest(id) {
         const db = await this.getCache();
         return new Promise(resolve => {
             const request = db.transaction(BUFFER_STORE, 'readwrite').objectStore(BUFFER_STORE).delete(id);
