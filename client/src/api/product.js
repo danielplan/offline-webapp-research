@@ -1,4 +1,4 @@
-import ApiClient from '../cache/apiClient';
+import ApiClient from '../cache/ApiClient';
 
 const productApi = new ApiClient('http://localhost:3000/');
 

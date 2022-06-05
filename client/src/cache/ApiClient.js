@@ -1,4 +1,4 @@
-import CacheManager from "./cacheManager";
+import CacheManager from "./CacheManager";
 
 export default class ApiClient {
     static {
@@ -72,7 +72,7 @@ export default class ApiClient {
                 });
                 if (result.ok) {
                     const data = await result.json();
-                    this.cacheManager.writeDataCache(path, data);
+                    await this.cacheManager.writeDataCache(path, data);
                     return data;
                 }
             } catch {
