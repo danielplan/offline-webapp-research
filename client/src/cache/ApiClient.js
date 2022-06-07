@@ -30,8 +30,21 @@ export default class ApiClient {
 
     isOnline = () => localStorage.getItem('online') == 1;
 
+    parsePath(path) {
+        if (this.baseUrl.endsWith('/')) {
+            return path.replace(/^\//, '');
+        } else {
+            if (path.startsWith('/')) {
+                return path;
+            } else {
+                return '/' + path;
+            }
+        }
+    }
+
 
     async _request(path, options, payload, method) {
+        path = this.parsePath(path);
         if (this.isOnline()) {
             try {
                 const result = await fetch(`${this.baseUrl}${path}`, {
@@ -64,6 +77,7 @@ export default class ApiClient {
      * @param {RequestInit} options fetch options
      */
     async get(path, options) {
+        path = this.parsePath(path);
         if (this.isOnline()) {
             try {
                 const result = await fetch(`${this.baseUrl}${path}`, {
