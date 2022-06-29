@@ -28,9 +28,9 @@ export default class ApiClient {
     }
 
 
-    isOnline = () => localStorage.getItem('online') == 1;
+    _isOnline = () => localStorage.getItem('online') == 1;
 
-    parsePath(path) {
+    _parsePath(path) {
         if (this.baseUrl.endsWith('/')) {
             return path.replace(/^\//, '');
         } else {
@@ -44,8 +44,8 @@ export default class ApiClient {
 
 
     async _request(path, options, payload, method) {
-        path = this.parsePath(path);
-        if (this.isOnline()) {
+        path = this._parsePath(path);
+        if (this._isOnline()) {
             try {
                 const result = await fetch(`${this.baseUrl}${path}`, {
                     ...this.fetchOptions,
@@ -77,8 +77,8 @@ export default class ApiClient {
      * @param {RequestInit} options fetch options
      */
     async get(path, options) {
-        path = this.parsePath(path);
-        if (this.isOnline()) {
+        path = this._parsePath(path);
+        if (this._isOnline()) {
             try {
                 const result = await fetch(`${this.baseUrl}${path}`, {
                     ...this.fetchOptions,

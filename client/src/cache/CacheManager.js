@@ -6,11 +6,6 @@ const BUFFER_STORE = 'buffer';
 
 export default class CacheManager {
 
-    /**
-     * 
-     * @param {string} id 
-     * @param {Database} database 
-     */
     constructor(id) {
         this.id = id;
         this.database = new Database(DB_NAME + '.' + this.id, [DATA_STORE, BUFFER_STORE]);
