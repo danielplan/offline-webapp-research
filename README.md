@@ -4,7 +4,7 @@ Research on how web-apps may persist to still work even when offline. This repos
 
 ## Problem
 
-TODO
+The problem that we try to solve is making a REST API work offline for web applications. That includes read and write requests from the web application to the REST API.
 
 ## Solution
 
