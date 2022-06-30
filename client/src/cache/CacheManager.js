@@ -21,7 +21,7 @@ export default class CacheManager {
     }
 
     async readDataCache(id) {
-        return this.database.get(id, DATA_STORE);
+        return (await this.database.get(id, DATA_STORE)).data;
     }
 
     async pushBufferedRequest(url, method, data) {
